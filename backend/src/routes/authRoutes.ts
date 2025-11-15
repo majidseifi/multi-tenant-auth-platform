@@ -23,6 +23,7 @@ const loginValidation = [
 router.post('/register', rateLimiter(5, 60000), registerValidation, AuthController.register);
 router.post('/login', rateLimiter(5, 60000), loginValidation, AuthController.login);
 router.post('/refresh', AuthController.refresh);
+router.post('/logout', AuthController.logout);
 router.get('/me', authenticate, AuthController.me);
 
 export default router;

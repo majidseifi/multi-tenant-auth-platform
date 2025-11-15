@@ -8,6 +8,9 @@ const store: RateLimitStore = {};
 
 export const rateLimiter = (maxRequests: number = 5, windowMs: number = 60000) => {
     return (req: Request, res: Response, next: NextFunction) => {
+        if (process.env.NODE_ENV === 'test') {
+            return next();
+        }
         const key = req.ip || 'Unknown';
         const now = Date.now();
 

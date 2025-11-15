@@ -1,6 +1,6 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import pool from '../config/database';
-
+import crypto from 'crypto';
 export interface TokenPayload {
     userId: number;
     email: string;
@@ -9,19 +9,34 @@ export interface TokenPayload {
 
 export class JWTService {
     static generateAccessToken(payload: TokenPayload): string {
-        return jwt.sign(payload, process.env.JWT_ACCESS_SECRET!, { expiresIn: '15m' });
+        return jwt.sign(
+            { ...payload, jti: crypto.randomUUID() },
+            process.env.JWT_ACCESS_SECRET!,
+            { expiresIn: '15m' });
     }
 
     static generateRefreshToken(payload: TokenPayload): string {
-        return jwt.sign(payload, process.env.JWT_REFRESH_SECRET!, { expiresIn: '7d' })
+        return jwt.sign({ ...payload, jti: crypto.randomUUID() },
+            process.env.JWT_REFRESH_SECRET!,
+            { expiresIn: '7d' })
     }
 
     static verifyAccessToken(token: string): TokenPayload {
-        return jwt.verify(token, process.env.JWT_ACCESS_SECRET!) as TokenPayload;
+        const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET!) as any;
+        return {
+            userId: decoded.userId,
+            email: decoded.email,
+            role: decoded.role
+        }
     }
 
     static verifyRefreshToken(token: string): TokenPayload {
-        return jwt.verify(token, process.env.JWT_REFRESH_SECRET!) as TokenPayload;
+        const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET!) as any;
+        return {
+            userId: decoded.userId,
+            email: decoded.email,
+            role: decoded.role
+        }
     }
 
     static async storeRefreshToken(userId: number, token: string): Promise<void> {
