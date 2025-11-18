@@ -3,6 +3,7 @@ import pool from '../config/database';
 import crypto from 'crypto';
 export interface TokenPayload {
     userId: number;
+    tenantId: string;
     email: string;
     role: string;
 }
@@ -24,6 +25,7 @@ export class JWTService {
     static verifyAccessToken(token: string): TokenPayload {
         const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET!) as any;
         return {
+            tenantId: decoded.tenantId,
             userId: decoded.userId,
             email: decoded.email,
             role: decoded.role
@@ -33,34 +35,35 @@ export class JWTService {
     static verifyRefreshToken(token: string): TokenPayload {
         const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET!) as any;
         return {
+            tenantId: decoded.tenantId,
             userId: decoded.userId,
             email: decoded.email,
             role: decoded.role
         }
     }
 
-    static async storeRefreshToken(userId: number, token: string): Promise<void> {
+    static async storeRefreshToken(userId: number, tenantId: string, token: string): Promise<void> {
         const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
         await pool.query(
-            'INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)',
-            [userId, token, expiresAt]
+            'INSERT INTO refresh_tokens (user_id, tenant_id, token, expires_at) VALUES ($1, $2, $3, $4)',
+            [userId, tenantId, token, expiresAt]
         );
     }
 
-    static async validateRefreshToken(token: string): Promise<boolean> {
+    static async validateRefreshToken(token: string, tenantId: string): Promise<boolean> {
         const result = await pool.query(
-            'SELECT * FROM refresh_tokens WHERE token = $1 AND expires_at > NOW()',
-            [token]
+            'SELECT * FROM refresh_tokens WHERE token = $1 AND tenant_id = $2 AND expires_at > NOW()',
+            [token, tenantId]
         );
 
         return result.rows.length > 0;
     }
 
-    static async revokeRefreshToken(token: string): Promise<void> {
-        await pool.query('DELETE FROM refresh_tokens WHERE token = $1', [token]);
+    static async revokeRefreshToken(token: string, tenantId: string): Promise<void> {
+        await pool.query('DELETE FROM refresh_tokens WHERE token = $1 AND tenant_id = $2', [token, tenantId]);
     }
 
-    static async revokeAllUserTokens(userId: number): Promise<void> {
-        await pool.query('DELETE FROM refresh_tokens WHERE user_id = $1', [userId]);
+    static async revokeAllUserTokens(userId: number, tenantId: string): Promise<void> {
+        await pool.query('DELETE FROM refresh_tokens WHERE user_id = $1 AND tenant_id = $2', [userId, tenantId]);
     }
 }
