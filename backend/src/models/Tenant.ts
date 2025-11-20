@@ -1,4 +1,3 @@
-import { param } from 'express-validator';
 import pool from '../config/database';
 
 // Tenant model interface, Each tenant has isolated user data
