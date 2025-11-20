@@ -47,8 +47,8 @@ A production-ready authentication and identity access management system built wi
 1. **Clone the repository:**
 
 ```bash
-git clone https://github.com/majidseifi/auth-iam-system.git
-cd auth-iam-system
+git clone https://github.com/majidseifi/multi-tenant-auth-platform.git
+cd multi-tenant-auth-platform
 ```
 
 2. **Setup backend:**

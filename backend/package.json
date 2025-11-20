@@ -1,7 +1,7 @@
 {
-  "name": "backend",
+  "name": "multi-tenant-auth-platform-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Multi-tenant authentication platform backend with JWT, RBAC, and tenant isolation",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --exec ts-node src/server.ts",
