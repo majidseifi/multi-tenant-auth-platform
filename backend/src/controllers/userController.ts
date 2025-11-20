@@ -32,7 +32,7 @@ export class UserController {
             if (!['admin', 'user', 'viewer'].includes(role)) {
                 return res.status(400).json({
                     error: 'Invalid role',
-                    allowd: ['admin', 'user', 'viewer']
+                    allowed: ['admin', 'user', 'viewer']
                 });
             }
 
