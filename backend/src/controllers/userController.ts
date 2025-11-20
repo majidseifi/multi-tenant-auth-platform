@@ -1,7 +1,5 @@
 import { Request, Response } from 'express';
 import { UserModel } from '../models/User';
-import { TenantModel } from '../models/Tenant';
-import { off } from 'process';
 
 export class UserController {
     // Get all users (tenant-scoped, admin only)
