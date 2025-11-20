@@ -155,6 +155,6 @@ export class TenantModel {
             'UPDATE tenants SET is_active = false WHERE id = $1',
             [id]
         );
-        return result.rowCount > 0;
+        return (result.rowCount ?? 0) > 0;
     }
 }
