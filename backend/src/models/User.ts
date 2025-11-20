@@ -106,7 +106,7 @@ export class UserModel {
 
     static async getAll(tenantId: string, limit: number = 50, offset: number = 0): Promise<User[]> {
         const result = await pool.query(
-            `SELECT id, email, first_name, last_name, role, is_Active, emaol_verified, created_at
+            `SELECT id, tenant_id, email, first_name, last_name, role, is_active, email_verified, created_at
             FROM users
             WHERE tenant_id = $1
             ORDER BY created_at DESC
