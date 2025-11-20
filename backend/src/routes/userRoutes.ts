@@ -1,39 +1,35 @@
-import { Router, Request } from 'express'
-import { authenticate, authorize } from "../middleware/auth";
-import { UserModel } from '../models/User';
+import { Router } from 'express';
+import { UserController } from '../controllers/userController';
+import { authenticate } from '../middleware/auth';
+import { extractTenantFromSlug, validateTenantMatch } from '../middleware/tenantContext';
 
 const router = Router();
 
-// Get all users (admin only)
-router.get('/', authenticate, authorize('admin'), async (req: Request, res) => {
-    try {
-        const limit = parseInt(req.query.limit as string) || 50;
-        const offset = parseInt(req.query.offset as string) || 0;
-
-        const users = await UserModel.getAll(limit, offset);
-        return res.status(200).json({ users })
-    } catch (error) {
-        console.error('Get users error', error);
-        return res.status(500).json({ error: 'Internal server error' });
+// Helper middleware to check for admin role
+const requireAdmin = (req: any, res: any, next: any) => {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Admin access required' });
     }
-});
+    next();
+};
 
-// Update user role (admin only)
-router.patch('/:userId/role', authenticate, authorize('admin'), async (req: Request, res) => {
-    try {
-        const { userId } = req.params;
-        const { role } = req.body;
+// All user routes are tenant-scoped and require authentication
+router.get(
+    '/t/:tenantSlug/users',
+    extractTenantFromSlug,
+    authenticate,
+    validateTenantMatch,
+    requireAdmin,
+    UserController.getAll
+);
 
-        if (!['admin', 'user', 'viewer'].includes(role)) {
-            return res.status(400).json({ error: 'Invalid role' });
-        }
-
-        await UserModel.updateRole(parseInt(userId), role);
-        return res.status(200).json({ message: 'Role updated successfully' });
-    } catch (error) {
-        console.error('Update role error:', error);
-        return res.status(500).json({ error: 'Internal server error' })
-    }
-});
+router.patch(
+    '/t/:tenantSlug/users/:userId/role',
+    extractTenantFromSlug,
+    authenticate,
+    validateTenantMatch,
+    requireAdmin,
+    UserController.updateRole
+);
 
 export default router;

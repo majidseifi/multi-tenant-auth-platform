@@ -28,9 +28,9 @@ app.use(express.urlencoded({ extended: true }));
 
 
 // Routes
-app.use('/api/auth', authRoutes);
+app.use('/api', authRoutes);
 app.use('/api', tenantRoutes)
-app.use('/api/users', userRoutes);
+app.use('/api', userRoutes);
 
 // 404 Handler
 app.use((req, res) => {
