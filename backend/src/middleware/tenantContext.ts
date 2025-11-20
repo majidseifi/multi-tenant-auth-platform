@@ -119,7 +119,7 @@ export const validateTenantMatch = (
 
         if (urlTenantId !== tokenTenantId) {
             // Log security incident
-            console.warn('SECURITY WARNING: Tenant mismatch attach attempt', {
+            console.warn('SECURITY WARNING: Tenant mismatch attack attempt', {
                 urlTenantId,
                 tokenTenantId,
                 userId: (req as any).user?.userId,
