@@ -3,6 +3,7 @@ import { body } from 'express-validator';
 import { AuthController } from '../controllers/authController';
 import { authenticate } from '../middleware/auth';
 import { rateLimiter } from '../middleware/ratelimiter';
+import { extractTenantFromSlug, validateTenantMatch } from '../middleware/tenantContext'
 
 const router = Router()
 
@@ -20,10 +21,46 @@ const loginValidation = [
 ];
 
 // Routes
-router.post('/register', rateLimiter(5, 60000), registerValidation, AuthController.register);
-router.post('/login', rateLimiter(5, 60000), loginValidation, AuthController.login);
-router.post('/refresh', AuthController.refresh);
-router.post('/logout', AuthController.logout);
-router.get('/me', authenticate, AuthController.me);
+
+// Public routes (no auth required, but tenant-scoped)
+router.post(
+    '/t/:tenantSlug/auth/register',
+    extractTenantFromSlug,
+    rateLimiter(5, 60000),
+    registerValidation,
+    AuthController.register
+);
+
+router.post(
+    '/t/:tenantSlug/auth/login',
+    extractTenantFromSlug,
+    rateLimiter(5, 60000),
+    loginValidation,
+    AuthController.login
+)
+
+router.post(
+    '/t/:tenantSlug/auth/refresh',
+    extractTenantFromSlug,
+    AuthController.refresh
+)
+
+// Protected routes (require authentication + tenant validation)
+
+router.post(
+    '/t/:tenantSlug/auth/logout',
+    extractTenantFromSlug,
+    authenticate,
+    validateTenantMatch,
+    AuthController.logout
+);
+
+router.post(
+    '/t/:tenantSlug/auth/me',
+    extractTenantFromSlug,
+    authenticate,
+    validateTenantMatch,
+    AuthController.me
+);
 
 export default router;
