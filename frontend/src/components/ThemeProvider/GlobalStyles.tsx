@@ -1,8 +1,8 @@
 import { createGlobalStyle } from "styled-components";
-import { type TenantTheme } from "../../theme/types";
 
 // Global styles that apply theme colors
-export const GlobalStyles = createGlobalStyle<{ theme: TenantTheme }>`
+// Theme is automatically provided by ThemeProvider context
+export const GlobalStyles = createGlobalStyle`
   * {
     margin: 0;
     padding: 0;
