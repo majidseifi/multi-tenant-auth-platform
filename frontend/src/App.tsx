@@ -4,6 +4,7 @@ import { GlobalStyles } from "./components/ThemeProvider/GlobalStyles";
 import { LoginPage } from "./pages/Login";
 import { RegisterPage } from "./pages/Register";
 import { TenantSettingsPage } from "./pages/TenantSettings";
+import { TenantRegisterPage } from "./pages/TenantRegister";
 
 // Main Application Component
 
@@ -13,8 +14,9 @@ function App() {
       <GlobalStyles />
       <BrowserRouter>
         <Routes>
-          {/* Redirect root to a default tenant or landing page */}
-          <Route path="/" element={<Navigate to="/welcome" replace />} />
+          {/* Tenant Registration - Main Landing Page */}
+          <Route path="/" element={<TenantRegisterPage />} />
+          <Route path="/register" element={<TenantRegisterPage />} />
 
           {/* Tenant-scoped routes */}
           <Route path="/t/:tenantSlug/login" element={<LoginPage />} />
