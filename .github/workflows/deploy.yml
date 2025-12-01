@@ -52,8 +52,9 @@ jobs:
         run: |
           cd backend
           npm ci
-          # Run database migrations
-          PGPASSWORD=postgres psql -h localhost -U postgres -d testdb -f src/config/multi-tenant-migration.sql
+          # Run database migrations in order
+          PGPASSWORD=postgres psql -h localhost -U postgres -d testdb -f migrations/01-schema.sql
+          PGPASSWORD=postgres psql -h localhost -U postgres -d testdb -f migrations/02-multi-tenant.sql
           npm test
 
       - name: Run frontend tests
