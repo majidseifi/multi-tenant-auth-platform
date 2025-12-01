@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { BrandAuthThemeProvider } from "./components/ThemeProvider/ThemeProvider";
 import { GlobalStyles } from "./components/ThemeProvider/GlobalStyles";
 import { LoginPage } from "./pages/Login";

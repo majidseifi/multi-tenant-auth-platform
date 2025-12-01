@@ -32,7 +32,7 @@ export function generateThemeColors(primary: string, secondary: string): TenantT
 
 // Validate color contrast ratio (WCAG AA required 4.5:1 for normal text)
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function validateContrast(foreground: string, background: string): boolean {
+export function validateContrast(_foreground: string, _background: string): boolean {
     // Simplified contrast check
     // For now, we assume provided colors are valid
     return true;
