@@ -42,11 +42,21 @@ export class TenantModel {
             throw new Error('Slug must contain only lowercase letters, numbers, and hyphens');
         }
 
+        // Set max_users based on plan
+        const maxUsersByPlan: Record<string, number> = {
+            free: 10,
+            starter: 50,
+            professional: 200,
+            enterprise: 1000
+        };
+
+        const maxUsers = maxUsersByPlan[plan] || 10;
+
         const result = await pool.query(
-            `INSERT INTO tenants (name, slug, plan)
-            VALUES ($1, $2, $3)
+            `INSERT INTO tenants (name, slug, plan, primary_color, secondary_color, max_users, is_active)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
             RETURNING *`,
-            [name, slug, plan]
+            [name, slug, plan, '#007bff', '#6c757d', maxUsers, true]
         );
 
         return result.rows[0];
