@@ -125,7 +125,7 @@ export const TenantRegisterPage: React.FC = () => {
 
     try {
       const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+        import.meta.env.VITE_API_URL || "http://localhost:5040/api";
 
       // Try to fetch tenant with this slug
       const response = await axios.get(`${API_URL}/tenants/${slug}`);
@@ -187,7 +187,7 @@ export const TenantRegisterPage: React.FC = () => {
 
     try {
       const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+        import.meta.env.VITE_API_URL || "http://localhost:5050/api";
 
       const response = await axios.post(`${API_URL}/tenants`, {
         name: formData.name,

@@ -190,7 +190,7 @@ export const TenantSettingsPage: React.FC = () => {
 
     try {
       const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+        import.meta.env.VITE_API_URL || "http://localhost:5050/api";
       const token = localStorage.getItem("access_token");
 
       // Upload logo if file selected
