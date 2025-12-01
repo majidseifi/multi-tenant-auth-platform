@@ -65,7 +65,7 @@ RETURNING id;
 -- Migrate existing users to default tenant
 UPDATE users
 SET tenant_id = (SELECT id FROM tenants WHERE slug = 'default')
-WHERE tenants_id IS NULL;
+WHERE tenant_id IS NULL;
 
 -- Migrate existing refresh tokens
 UPDATE refresh_tokens
@@ -80,7 +80,7 @@ ALTER TABLE refresh_tokens ALTER COLUMN tenant_id  SET NOT NULL;
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
-    NEW.update_at = CURRENT_TIMESTAMP;
+    NEW.updated_at = CURRENT_TIMESTAMP;
     RETURN NEW;
 END;
 $$ language 'plpgsql';

@@ -14,13 +14,53 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v3
 
-      - name: Run tests
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install PostgreSQL client
         run: |
-          cd backend && npm ci && npm test
-          cd ../frontend && npm ci && npm test
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Run backend tests
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
+          JWT_ACCESS_SECRET: test_access_secret_key_for_ci
+          JWT_REFRESH_SECRET: test_refresh_secret_key_for_ci
+          NODE_ENV: test
+        run: |
+          cd backend
+          npm ci
+          # Run database migrations
+          PGPASSWORD=postgres psql -h localhost -U postgres -d testdb -f src/config/multi-tenant-migration.sql
+          npm test
+
+      - name: Run frontend tests
+        run: |
+          cd frontend
+          npm ci
+          npm test
 
   build-and-push:
     needs: test
