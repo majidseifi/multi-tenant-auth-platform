@@ -1,0 +1,38 @@
+services:
+  backend:
+    image: multi-tenant-auth-platform-backend
+    container_name: backend_api
+    environment:
+      NODE_ENV: production
+      PORT: 5050
+      DATABASE_URL: ${DATABASE_URL:-postgresql://postgres.lpurjsqqbawffzarlgyp:YCD*wmb*mqx3hzq6mwa@aws-1-ca-central-1.pooler.supabase.com:6543/postgres}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      JWT_REFRESH_EXPIRY: ${JWT_REFRESH_EXPIRY:-7d}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET}
+      SENTRY_DSN: ${SENTRY_DSN}
+    ports:
+      - "5050:5050"
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:5050/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  frontend:
+    image: multi-tenant-auth-platform-frontend
+    container_name: frontend_app
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
